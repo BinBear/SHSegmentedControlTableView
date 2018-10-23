@@ -100,7 +100,8 @@ Both scroll horizontal and vertical for segment scrollview which have a same hea
 
   s.subspec 'SHSegmentContent' do |ssg|
     ssg.source_files = 'SHSegmentedControl/SHSegmentContent/*.{h,m}'
-  end
+    ssg.dependency 'Masonry'
+ end
 
 
   # ――― Resources ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
