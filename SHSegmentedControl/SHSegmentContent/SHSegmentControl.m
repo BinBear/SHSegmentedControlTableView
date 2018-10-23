@@ -64,17 +64,17 @@ const NSInteger tag = 20171010;
 - (void)init_setup {
     
     _titleMargin = 0;
-    _titleNormalFont  = [UIFont pingFangSCFontOfSize:15];
-    _titleSelectFont  = [UIFont pingFangSCFontOfSize:15];
+    _titleNormalFont  = [UIFont fontWithName:@".PingFangSC-Regular" size:15];
+    _titleSelectFont  = [UIFont fontWithName:@".PingFangSC-Regular" size:15];
     _titleNormalColor = [[UIColor blackColor] colorWithAlphaComponent:0.7];
     _titleSelectColor = [UIColor blackColor];
-    _subTitleFont     = [UIFont pingFangSCFontOfSize:10];
+    _subTitleFont     = [UIFont fontWithName:@".PingFangSC-Regular" size:10];
     
     _progressColor = [UIColor lightGrayColor];
     _progressCornerRadius = 1.5f;
     _progressWidth = 65.f;
     _progressHeight = 3.f;
-    _bottomLineColor = [UIColor colorWithHexString:@"#DEDEDE"];
+    _bottomLineColor = [UIColor lightGrayColor];
     _bottomLineHeight = 0.5f;
     _curIndex = 0;
     _type = SHSegmentControlTypeNone;
@@ -159,7 +159,7 @@ const NSInteger tag = 20171010;
     CGRect frame = self.progressView.frame;
     CGFloat titleWidth = ceilf([btn.title boundingRectWithSize:CGSizeMake(MAXFLOAT, 0) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:self.titleSelectFont} context:nil].size.width) + 30;
     frame.size.width = self.progressWidth > 0 ? self.progressWidth : titleWidth;
-    frame.origin.x = btn.centerX - frame.size.width * 0.5;
+    frame.origin.x = btn.center.x - frame.size.width * 0.5;
     
     [UIView animateWithDuration:0.25 animations:^{
         self.progressView.frame = frame;
@@ -169,15 +169,15 @@ const NSInteger tag = 20171010;
     }];
     
     //横向内容超屏后，判断按钮中心位置，改变contentOffset
-    if (self.contentSize.width > self.width) {
+    if (self.contentSize.width > self.frame.size.width) {
         //居左
-        CGFloat offsetX = btn.centerX- self.width * 0.5;
+        CGFloat offsetX = btn.center.x- self.frame.size.width * 0.5;
         if (offsetX < 0) {
             offsetX = 0;
         }
         
         //居右
-        CGFloat maxOffsetX = self.contentSize.width - self.width;
+        CGFloat maxOffsetX = self.contentSize.width - self.frame.size.width;
         if (offsetX > maxOffsetX) {
             offsetX = maxOffsetX;
         }
@@ -210,7 +210,7 @@ const NSInteger tag = 20171010;
             NSString *title = self.titleArray[index];
             
             CGFloat btnW = ceilf([title boundingRectWithSize:CGSizeMake(MAXFLOAT, 0) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:btn.titleFont} context:nil].size.width) + 30;
-            CGFloat btnH = self.height - self.progressHeight - 10;
+            CGFloat btnH = self.frame.size.height - self.progressHeight - 10;
             CGFloat btnX = CGRectGetMaxX(lastView.frame) + self.titleMargin;
             CGFloat btnY = 5;
             
@@ -220,9 +220,9 @@ const NSInteger tag = 20171010;
             lastView = btn;
         }
         //总宽小于父视图宽
-        if (CGRectGetMaxX(lastView.frame) < self.width) {
-            CGFloat btnW = (self.width - self.titleMargin * (self.btnArray.count + 1)) / self.btnArray.count;
-            CGFloat btnH = self.height - self.progressHeight - 10;
+        if (CGRectGetMaxX(lastView.frame) < self.frame.size.width) {
+            CGFloat btnW = (self.frame.size.width - self.titleMargin * (self.btnArray.count + 1)) / self.btnArray.count;
+            CGFloat btnH = self.frame.size.height - self.progressHeight - 10;
             CGFloat btnY = 5;
             
             for (NSInteger index = 0; index < self.btnArray.count; index++) {
@@ -240,10 +240,10 @@ const NSInteger tag = 20171010;
         CGFloat titleWidth = ceilf([[self.titleArray firstObject] boundingRectWithSize:CGSizeMake(MAXFLOAT, 0) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:self.titleSelectFont} context:nil].size.width) + 30;
         
         self.progressWidth = self.progressWidth > 0 ? self.progressWidth : titleWidth;
-        CGFloat progressX = [self.btnArray firstObject].centerX - self.progressWidth * 0.5;
-        self.progressView.frame = CGRectMake(progressX, self.height - self.progressHeight - self.bottomLineHeight, self.progressWidth, self.progressHeight);
+        CGFloat progressX = [self.btnArray firstObject].center.x - self.progressWidth * 0.5;
+        self.progressView.frame = CGRectMake(progressX, self.frame.size.height - self.progressHeight - self.bottomLineHeight, self.progressWidth, self.progressHeight);
     }
-    self.lineV.frame = CGRectMake(0, self.height - self.bottomLineHeight, self.width, self.bottomLineHeight);
+    self.lineV.frame = CGRectMake(0, self.frame.size.height - self.bottomLineHeight, self.frame.size.width, self.bottomLineHeight);
     self.lineV.backgroundColor = self.bottomLineColor;
 }
 #pragma mark -

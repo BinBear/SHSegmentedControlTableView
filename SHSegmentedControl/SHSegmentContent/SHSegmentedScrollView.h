@@ -8,8 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import <MJRefresh/MJRefresh.h>
-
 #import "SHSegmentControl.h"
 
 @class SHSegmentedScrollView;
@@ -42,6 +40,6 @@
 
 @property (nonatomic, assign, readonly) NSInteger selectedIndex;
 /** 刷新数据 （和selectedIndex 配合使用可单一刷新index数据） */
-@property (nonatomic, strong) MJRefreshHeader *refreshHeader;
+//@property (nonatomic, strong) MJRefreshHeader *refreshHeader;
 
 @end
