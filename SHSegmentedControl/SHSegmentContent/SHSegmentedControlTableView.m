@@ -101,10 +101,10 @@
 }
 #pragma mark -
 #pragma mark   ==============数据刷新==============
-- (void)setRefreshHeader:(MJRefreshHeader *)refreshHeader {
-    _refreshHeader = refreshHeader;
-    if (refreshHeader) self.tableView.mj_header = refreshHeader;
-}
+//- (void)setRefreshHeader:(MJRefreshHeader *)refreshHeader {
+//    _refreshHeader = refreshHeader;
+//    if (refreshHeader) self.tableView.mj_header = refreshHeader;
+//}
 - (NSInteger)selectedIndex {
     return self.index;
 }
