@@ -13,14 +13,14 @@
 
 @property (nonatomic, strong) NSMutableArray *titleArray;
 
-@property (nonatomic, strong) NSMutableArray<SHTapButtonView *> *btnArray;
-
 @property (nonatomic, strong) UIView *progressView;
 
 @property (nonatomic, strong) UIImageView *lineV;
 
 @property (nonatomic, assign) NSInteger curIndex;
 
+@property (nonatomic,strong) UIView *topView;
+@property (nonatomic,strong) UIView *bottomView;
 @end
 
 const NSInteger tag = 20171010;
@@ -42,7 +42,7 @@ const NSInteger tag = 20171010;
     }
     return self;
 }
-- (instancetype)initWithFrame:(CGRect)frame items:(NSArray<NSString *> *)items {
+- (instancetype)initWithFrame:(CGRect)frame items:(NSArray *)items {
     if (self = [super initWithFrame:frame]) {
         
         self.pagingEnabled = YES;
@@ -51,6 +51,40 @@ const NSInteger tag = 20171010;
         self.showsHorizontalScrollIndicator = NO;
         
         self.titleArray = items.mutableCopy;
+        
+        [self init_setup];
+        [self addSubview:self.progressView];
+        
+        [self addSubview];
+        self.lineV.frame = CGRectMake(0, frame.size.height - self.bottomLineHeight, frame.size.width, self.bottomLineHeight);
+        [self addSubview:self.lineV];
+    }
+    return self;
+}
+
+- (instancetype)initWithFrame:(CGRect)frame
+                        items:(NSArray *)items
+                      topView:(UIView *)topView
+                   bottomView:(UIView *)bottomView {
+    
+    if (self = [super initWithFrame:frame]) {
+        
+        self.pagingEnabled = YES;
+        self.bounces = NO;
+        self.showsVerticalScrollIndicator = NO;
+        self.showsHorizontalScrollIndicator = NO;
+        
+        self.titleArray = items.mutableCopy;
+        self.topView = topView;
+        self.bottomView = bottomView;
+        
+        if (self.topView) {
+            [self addSubview:self.topView];
+        }
+        
+        if (self.bottomView) {
+            [self addSubview:self.bottomView];
+        }
         
         [self init_setup];
         [self addSubview:self.progressView];
@@ -87,9 +121,15 @@ const NSInteger tag = 20171010;
 - (void)addSubview {
     [self.btnArray removeAllObjects];
     for (NSInteger index = 0; index < self.titleArray.count; index++) {
-        NSString *title = self.titleArray[index];
+        id title = self.titleArray[index];
         SHTapButtonView *selectBtn = [[SHTapButtonView alloc] init];
-        selectBtn.title = title;
+        if ([title isKindOfClass:[NSString class]]) {
+            selectBtn.title = title;
+        }
+        if ([title isKindOfClass:NSAttributedString.class] ||
+            [title isKindOfClass:NSMutableAttributedString.class]) {
+            selectBtn.attributedText = title;
+        }
         selectBtn.tag = tag + index;
         selectBtn.tapClick = ^(SHTapButtonView *btn) {
             [self btnClick:btn isBlock:YES];
@@ -100,12 +140,116 @@ const NSInteger tag = 20171010;
 }
 #pragma mark -
 #pragma mark   ==============restItmes==============
-- (void)restItmes:(NSArray<NSString *> *)items {
+- (void)restItmes:(NSArray *)items {
     self.titleArray = items.mutableCopy;
     [self.btnArray makeObjectsPerformSelector:@selector(removeFromSuperview)];
     [self addSubview];
     [self reloadViews];
 }
+- (void)restItmes:(NSArray *)items
+          topView:(UIView *)topView
+       bottomView:(UIView *)bottomView {
+    
+    if (self.topView) {
+        CGRect rect = self.frame;
+        rect.size.height -= self.topView.frame.size.height;
+        [self.topView removeFromSuperview];
+    }
+    if (topView) {
+        self.topView = topView;
+        [self addSubview:self.topView];
+    }
+    
+    if (self.bottomView) {
+        CGRect rect = self.frame;
+        rect.size.height -= self.bottomView.frame.size.height;
+        [self.bottomView removeFromSuperview];
+    }
+    if (bottomView) {
+        self.bottomView = bottomView;
+        [self addSubview:self.bottomView];
+    }
+    
+    self.titleArray = items.mutableCopy;
+    [self.btnArray makeObjectsPerformSelector:@selector(removeFromSuperview)];
+    [self addSubview];
+    [self reloadViews];
+}
+- (void)restTopView:(UIView *)topView
+         bottomView:(UIView *)bottomView {
+        
+    if (self.topView) {
+        CGRect rect = self.frame;
+        rect.size.height -= self.topView.frame.size.height;
+        self.frame = rect;
+        [self.topView removeFromSuperview];
+        self.topView = nil;
+    }
+    if (topView) {
+        self.topView = topView;
+        CGRect rect = self.frame;
+        rect.size.height += self.topView.frame.size.height;
+        self.frame = rect;
+        [self addSubview:self.topView];
+    }
+    
+    if (self.bottomView) {
+        CGRect rect = self.frame;
+        rect.size.height -= self.bottomView.frame.size.height;
+        self.frame = rect;
+        [self.bottomView removeFromSuperview];
+         self.bottomView = nil;
+    }
+    if (bottomView) {
+        self.bottomView = bottomView;
+        CGRect rect = self.frame;
+        rect.size.height += self.bottomView.frame.size.height;
+        self.frame = rect;
+        [self addSubview:self.bottomView];
+    }
+    
+    if (self.titleArray.count == self.btnArray.count && self.titleArray.count > 0) {
+        
+        for (NSInteger index = 0; index < self.btnArray.count; index++) {
+            
+            SHTapButtonView *btn = self.btnArray[index];
+            CGFloat btnW = btn.frame.size.width;
+            CGFloat heigth = self.frame.size.height;
+            if (self.topView) {
+                heigth = heigth - self.topView.frame.size.height;
+            }
+            if (self.bottomView) {
+                heigth = heigth - self.bottomView.frame.size.height;
+            }
+            CGFloat btnH = heigth - self.progressHeight - 10;
+            CGFloat btnX = btn.frame.origin.x;
+            CGFloat btnY = self.topView ? self.topView.frame.size.height + 5 : 5;
+            btn.frame = CGRectMake(btnX, btnY, btnW, btnH);
+        }
+      
+        CGFloat heigth = self.frame.size.height;
+        if (self.bottomView) {
+            heigth = heigth - self.bottomView.frame.size.height;
+        }
+        self.progressView.frame = CGRectMake(self.progressView.frame.origin.x, heigth - self.progressHeight - self.bottomLineHeight, self.progressWidth, self.progressHeight);
+    }
+    
+    if (self.topView) {
+        self.topView.frame = CGRectMake(0, 0, self.topView.frame.size.width, self.topView.frame.size.height);
+    }
+    
+    if (self.bottomView) {
+        self.bottomView.frame = CGRectMake(0, self.frame.size.height - self.bottomView.frame.size.height , self.bottomView.frame.size.width, self.bottomView.frame.size.height);
+    }
+    
+    CGFloat heigth = self.frame.size.height;
+    if (self.bottomView) {
+        heigth = heigth - self.bottomView.frame.size.height;
+    }
+    self.lineV.frame = CGRectMake(0, heigth - self.bottomLineHeight, self.frame.size.width, self.bottomLineHeight);
+    self.lineV.backgroundColor = self.bottomLineColor;
+}
+
 - (void)setSegmentSelectedIndex:(NSInteger)index {
     if (index < self.btnArray.count) {
         [self btnClick:self.btnArray[index] isBlock:NO];
@@ -117,11 +261,17 @@ const NSInteger tag = 20171010;
 - (NSInteger)selectIndex {
     return self.curIndex;
 }
+- (SHTapButtonView *)currentButtonView {
+    return self.btnArray[self.selectIndex];
+}
 #pragma mark -
 #pragma mark   ==============setItmesSubTitle==============
 - (void)setItmesSubTitle:(NSArray<NSString *> *)items {
-    if (items.count == self.titleArray.count && items.count > 0 && (self.type == SHSegmentControlTypeSubTitle || self.type == SHSegmentControlTypeWaterSubTitle)) {
+    if (items.count == self.titleArray.count && items.count > 0 &&
+        (self.type == SHSegmentControlTypeSubTitle ||
+         self.type == SHSegmentControlTypeWaterSubTitle)) {
         for (NSInteger index = 0; index < items.count; index++) {
+            
             NSString *subTitle = items[index];
             SHTapButtonView *btn = self.btnArray[index];
             btn.subTitle = subTitle;
@@ -147,7 +297,7 @@ const NSInteger tag = 20171010;
         if (isRun) {
             [UIView beginAnimations:nil context:UIGraphicsGetCurrentContext()];
             [UIView setAnimationCurve:UIViewAnimationCurveEaseIn];
-            [UIView setAnimationDuration:0.25];
+            [UIView setAnimationDuration:0.1];
             btn.transform = CGAffineTransformMakeScale(1.2, 1.2);
             [UIView commitAnimations];
         }else {
@@ -157,11 +307,21 @@ const NSInteger tag = 20171010;
     
     //移动下划线
     CGRect frame = self.progressView.frame;
-    CGFloat titleWidth = ceilf([btn.title boundingRectWithSize:CGSizeMake(MAXFLOAT, 0) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:self.titleSelectFont} context:nil].size.width) + 30;
+    CGFloat titleWidth = 0.0;
+    if (btn.title.length) {
+         titleWidth = ceilf([btn.title boundingRectWithSize:CGSizeMake(MAXFLOAT, 0) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:self.titleSelectFont} context:nil].size.width) ;
+    } else {
+        NSAttributedString *str = btn.attributedText;
+        titleWidth =
+        [str boundingRectWithSize:CGSizeMake(MAXFLOAT, 0)
+                          options:NSStringDrawingUsesLineFragmentOrigin
+                          context:nil].size.width;
+    }
+    
     frame.size.width = self.progressWidth > 0 ? self.progressWidth : titleWidth;
     frame.origin.x = btn.center.x - frame.size.width * 0.5;
     
-    [UIView animateWithDuration:0.25 animations:^{
+    [UIView animateWithDuration:0.1 animations:^{
         self.progressView.frame = frame;
     } completion:^(BOOL finished) {
         btn.selected = YES;
@@ -197,7 +357,8 @@ const NSInteger tag = 20171010;
     
     if (self.titleArray.count == self.btnArray.count && self.titleArray.count > 0) {
         UIView *lastView = nil;
-        
+        CGFloat titleWidth = 0.0;
+
         for (NSInteger index = 0; index < self.btnArray.count; index++) {
             SHTapButtonView *btn = self.btnArray[index];
             btn.subHide = !(self.type == SHSegmentControlTypeSubTitle || self.type == SHSegmentControlTypeWaterSubTitle);
@@ -207,24 +368,59 @@ const NSInteger tag = 20171010;
             btn.titleFont = self.titleNormalFont;
             btn.titleNormalColor = self.titleNormalColor;
             btn.titleSelectColor = self.titleSelectColor;
-            NSString *title = self.titleArray[index];
             
-            CGFloat btnW = ceilf([title boundingRectWithSize:CGSizeMake(MAXFLOAT, 0) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:btn.titleFont} context:nil].size.width) + 30;
-            CGFloat btnH = self.frame.size.height - self.progressHeight - 10;
+            CGFloat width = 0.0;
+            if ([self.titleArray[index] isKindOfClass:NSString.class]) {
+                NSString *title = self.titleArray[index];
+                width = [title boundingRectWithSize:CGSizeMake(MAXFLOAT, 0)
+                                            options:NSStringDrawingUsesLineFragmentOrigin
+                                         attributes:@{NSFontAttributeName:btn.titleFont} context:nil].size.width;
+            }
+            
+            if ([self.titleArray[index] isKindOfClass:NSAttributedString.class] ||
+                [self.titleArray[index] isKindOfClass:NSMutableAttributedString.class]) {
+                NSAttributedString *attrTitle = self.titleArray[index];
+                width =
+                [attrTitle boundingRectWithSize:CGSizeMake(MAXFLOAT, 0)
+                                        options:NSStringDrawingUsesLineFragmentOrigin
+                                        context:nil].size.width;
+            }
+            
+            if (index == 0) {
+                titleWidth = width;
+            }
+
+            CGFloat btnW = width;
+            
+            CGFloat heigth = self.frame.size.height;
+            if (self.topView) {
+                heigth = heigth - self.topView.frame.size.height;
+            }
+            if (self.bottomView) {
+                heigth = heigth - self.bottomView.frame.size.height;
+            }
+            CGFloat btnH = heigth - self.progressHeight - 10;
             CGFloat btnX = CGRectGetMaxX(lastView.frame) + self.titleMargin;
-            CGFloat btnY = 5;
-            
+            CGFloat btnY = self.topView ? self.topView.frame.size.height + 5 : 5;
+
             btn.frame = CGRectMake(btnX, btnY, btnW, btnH);
-            
+
             btn.selected = (index == 0);
             lastView = btn;
         }
         //总宽小于父视图宽
         if (CGRectGetMaxX(lastView.frame) < self.frame.size.width) {
             CGFloat btnW = (self.frame.size.width - self.titleMargin * (self.btnArray.count + 1)) / self.btnArray.count;
-            CGFloat btnH = self.frame.size.height - self.progressHeight - 10;
-            CGFloat btnY = 5;
-            
+            CGFloat heigth = self.frame.size.height;
+            if (self.topView) {
+                heigth = heigth - self.topView.frame.size.height;
+            }
+            if (self.bottomView) {
+                heigth = heigth - self.bottomView.frame.size.height;
+            }
+            CGFloat btnH = heigth - self.progressHeight - 10;
+            CGFloat btnY = self.topView ? self.topView.frame.size.height + 5 : 5;
+
             for (NSInteger index = 0; index < self.btnArray.count; index++) {
                 CGFloat btnX = self.titleMargin + (self.titleMargin + btnW) * index;
                 SHTapButtonView *btn = self.btnArray[index];
@@ -232,18 +428,33 @@ const NSInteger tag = 20171010;
                 lastView = btn;
             }
         }
-        
+
         self.contentSize = CGSizeMake(CGRectGetMaxX(lastView.frame) + self.titleMargin, 0);
         self.progressView.layer.cornerRadius = self.progressCornerRadius;
         self.progressView.backgroundColor = self.progressColor;
-        
-        CGFloat titleWidth = ceilf([[self.titleArray firstObject] boundingRectWithSize:CGSizeMake(MAXFLOAT, 0) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:self.titleSelectFont} context:nil].size.width) + 30;
-        
         self.progressWidth = self.progressWidth > 0 ? self.progressWidth : titleWidth;
         CGFloat progressX = [self.btnArray firstObject].center.x - self.progressWidth * 0.5;
-        self.progressView.frame = CGRectMake(progressX, self.frame.size.height - self.progressHeight - self.bottomLineHeight, self.progressWidth, self.progressHeight);
+        
+        CGFloat heigth = self.frame.size.height;
+        if (self.bottomView) {
+            heigth = heigth - self.bottomView.frame.size.height;
+        }
+        self.progressView.frame = CGRectMake(progressX, heigth - self.progressHeight - self.bottomLineHeight, self.progressWidth, self.progressHeight);
     }
-    self.lineV.frame = CGRectMake(0, self.frame.size.height - self.bottomLineHeight, self.frame.size.width, self.bottomLineHeight);
+    
+    if (self.topView) {
+        self.topView.frame = CGRectMake(0, 0, self.topView.frame.size.width, self.topView.frame.size.height);
+    }
+    
+    if (self.bottomView) {
+        self.bottomView.frame = CGRectMake(0, self.frame.size.height - self.bottomView.frame.size.height , self.bottomView.frame.size.width, self.bottomView.frame.size.height);
+    }
+    
+    CGFloat heigth = self.frame.size.height;
+    if (self.bottomView) {
+        heigth = heigth - self.bottomView.frame.size.height;
+    }
+    self.lineV.frame = CGRectMake(0, heigth - self.bottomLineHeight, self.frame.size.width, self.bottomLineHeight);
     self.lineV.backgroundColor = self.bottomLineColor;
 }
 #pragma mark -
@@ -338,6 +549,10 @@ const NSInteger tag = 20171010;
 - (void)setTitle:(NSString *)title {
     _title = title;
     self.titleL.text = title;
+}
+- (void)setAttributedText:(NSAttributedString *)attributedText {
+    _attributedText = attributedText;
+    self.titleL.attributedText = attributedText;
 }
 - (void)setSubTitle:(NSString *)subTitle {
     _subTitle = subTitle;

@@ -7,7 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-
 #import <Masonry/Masonry.h>
 
 typedef enum : NSUInteger {
@@ -21,6 +20,7 @@ typedef enum : NSUInteger {
     SHSegmentControlTypeWaterSubTitle,
 } SHSegmentControlType;
 
+@class SHTapButtonView;
 @interface SHSegmentControl : UIScrollView
 /** 间距 */
 @property (nonatomic, assign) CGFloat titleMargin;
@@ -58,6 +58,10 @@ typedef enum : NSUInteger {
 @property (nonatomic, assign, readonly) NSInteger selectIndex;
 /** 分栏总数 */
 @property (nonatomic, assign) NSInteger totalCount;
+/** 当前的 */
+@property (nonatomic,strong) SHTapButtonView *currentButtonView;
+/**  */
+@property (nonatomic, strong) NSMutableArray<SHTapButtonView *> *btnArray;
 
 
 /** 分栏点击事件回调block */
@@ -75,11 +79,23 @@ typedef enum : NSUInteger {
 /** 默认初始化方式 */
 - (instancetype)initWithFrame:(CGRect)frame;
 /** 带分栏信息---初始化 */
-- (instancetype)initWithFrame:(CGRect)frame items:(NSArray<NSString *> *)items;
+- (instancetype)initWithFrame:(CGRect)frame items:(NSArray *)items;
+/** 带分栏信息---初始化 opView  bottomView */
+- (instancetype)initWithFrame:(CGRect)frame
+                        items:(NSArray *)items
+                      topView:(UIView *)topView
+                   bottomView:(UIView *)bottomView;
 
 
 /** 重新设置分栏 */
-- (void)restItmes:(NSArray<NSString *> *)items;
+- (void)restItmes:(NSArray *)items;
+/** 重新设置分栏 topView  bottomView */
+- (void)restItmes:(NSArray *)items
+          topView:(UIView *)topView
+       bottomView:(UIView *)bottomView;
+/**topView  bottomView */
+- (void)restTopView:(UIView *)topView
+         bottomView:(UIView *)bottomView;
 /** 设置分栏子标题 （个数和分栏数相同，没有给@""） */
 - (void)setItmesSubTitle:(NSArray<NSString *> *)items;
 /** 属性设置后，手动刷新，提高性能 */
@@ -108,6 +124,8 @@ typedef enum : NSUInteger {
 @property (nonatomic, assign) BOOL subHide;
 /** 标题 */
 @property (nonatomic, copy) NSString *title;
+/** 富文本标题 */
+@property (nonatomic, copy) NSAttributedString *attributedText;
 /** 小标题 */
 @property (nonatomic, copy) NSString *subTitle;
 
