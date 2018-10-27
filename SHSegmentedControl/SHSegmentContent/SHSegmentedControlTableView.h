@@ -31,9 +31,13 @@ typedef NS_ENUM(NSInteger, SHSegmentedControlNavStyle) {
 
 @end
 
+@class SHPageContentView;
 @interface SHSegmentedControlTableView : UIView
 /** 主容器 */
 @property (nonatomic, strong) SHMAINTableView *tableView;
+
+@property (nonatomic, strong) SHPageContentView *pageContentView;
+
 
 /** 导航栏样式 (默认SHSegmentedControlNavStyleNone) */
 @property (nonatomic, assign) SHSegmentedControlNavStyle navStyle;
@@ -77,6 +81,8 @@ typedef NS_ENUM(NSInteger, SHSegmentedControlNavStyle) {
 
 @interface SHPageContentView : UIView
 
+/// collectionView
+@property (nonatomic, strong) SHTapCollectionView *collectionView;
 /**
  对象方法创建 SHPageContentView
 

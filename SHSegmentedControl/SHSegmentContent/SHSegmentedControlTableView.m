@@ -21,8 +21,6 @@ isPhoneX = [[UIApplication sharedApplication] delegate].window.safeAreaInsets.bo
 #pragma mark   ==============SHSegmentedControlTableView==============
 @interface SHSegmentedControlTableView()<UITableViewDelegate,UITableViewDataSource,SHTableViewDelegate,SHPageContentViewDelegate>
 
-@property (nonatomic, strong) SHPageContentView *pageContentView;
-
 @property (nonatomic, strong) UIScrollView *childVCScrollView;
 
 @property (nonatomic, assign) NSInteger index;
@@ -131,6 +129,7 @@ isPhoneX = [[UIApplication sharedApplication] delegate].window.safeAreaInsets.bo
 }
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass(UITableViewCell.class)];
+    cell.contentView.backgroundColor = [UIColor clearColor];
     [cell.contentView addSubview:self.pageContentView];
     return cell;
 }
@@ -207,8 +206,6 @@ isPhoneX = [[UIApplication sharedApplication] delegate].window.safeAreaInsets.bo
 @property (nonatomic, weak) UIView *parentView;
 /// 存储子视图
 @property (nonatomic, strong) NSArray *childViews;
-/// collectionView
-@property (nonatomic, strong) SHTapCollectionView *collectionView;
 /// 记录刚开始时的偏移量
 @property (nonatomic, assign) NSInteger startOffsetX;
 /// 标记按钮是否点击
@@ -285,13 +282,26 @@ isPhoneX = [[UIApplication sharedApplication] delegate].window.safeAreaInsets.bo
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cell" forIndexPath:indexPath];
+    cell.backgroundColor= [UIColor clearColor];
     [cell.contentView.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
     UIView *view = self.childViews[indexPath.item];
     view.frame = cell.contentView.frame;
     [cell.contentView addSubview:view];
     return cell;
 }
-
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    
+    CGFloat currentOffsetX = scrollView.contentOffset.x;
+    CGFloat scrollViewW = scrollView.bounds.size.width;
+    
+    NSInteger originalIndex = (NSInteger)self.startOffsetX / scrollViewW;
+    NSInteger targetIndex = (NSInteger)currentOffsetX / scrollViewW;
+    
+    if (self.delegatePageContentView && [self.delegatePageContentView respondsToSelector:@selector(pageContentView:progress:originalIndex:targetIndex:)]) {
+        [self.delegatePageContentView pageContentView:self progress:1.0 originalIndex:originalIndex targetIndex:targetIndex];
+    }
+    
+}
 #pragma mark -
 #pragma mark   ==============UICollectionViewDelegate==============
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
@@ -348,7 +358,7 @@ isPhoneX = [[UIApplication sharedApplication] delegate].window.safeAreaInsets.bo
 - (void)setPageCententViewCurrentIndex:(NSInteger)currentIndex {
     self.isClickBtn = YES;
     CGFloat offsetX = currentIndex * self.collectionView.frame.size.width;
-    [self.collectionView setContentOffset:CGPointMake(offsetX, 0) animated:YES];
+    [self.collectionView setContentOffset:CGPointMake(offsetX, 0) animated:NO];
 }
 
 @end
