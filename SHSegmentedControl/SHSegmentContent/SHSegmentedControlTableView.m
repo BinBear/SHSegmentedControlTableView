@@ -129,7 +129,7 @@ isPhoneX = [[UIApplication sharedApplication] delegate].window.safeAreaInsets.bo
 }
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass(UITableViewCell.class)];
-    cell.contentView.backgroundColor = [UIColor clearColor];
+    cell.backgroundColor = tableView.backgroundColor;
     [cell.contentView addSubview:self.pageContentView];
     return cell;
 }
