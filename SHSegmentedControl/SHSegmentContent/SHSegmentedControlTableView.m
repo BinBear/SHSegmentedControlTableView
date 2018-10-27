@@ -352,7 +352,19 @@ isPhoneX = [[UIApplication sharedApplication] delegate].window.safeAreaInsets.bo
         [self.delegatePageContentView pageContentView:self progress:progress originalIndex:originalIndex targetIndex:targetIndex];
     }
 }
-
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    
+    CGFloat currentOffsetX = scrollView.contentOffset.x;
+    CGFloat scrollViewW = scrollView.bounds.size.width;
+    
+    NSInteger originalIndex = (NSInteger)self.startOffsetX / scrollViewW;
+    NSInteger targetIndex = (NSInteger)currentOffsetX / scrollViewW;
+    
+    if (self.delegatePageContentView && [self.delegatePageContentView respondsToSelector:@selector(pageContentView:progress:originalIndex:targetIndex:)]) {
+        [self.delegatePageContentView pageContentView:self progress:1.0 originalIndex:originalIndex targetIndex:targetIndex];
+    }
+    
+}
 #pragma mark -
 #pragma mark   ==============给外界提供的方法，获取 SHPageTitleView 选中按钮的下标==============
 - (void)setPageCententViewCurrentIndex:(NSInteger)currentIndex {
