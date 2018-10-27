@@ -289,19 +289,7 @@ isPhoneX = [[UIApplication sharedApplication] delegate].window.safeAreaInsets.bo
     [cell.contentView addSubview:view];
     return cell;
 }
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    
-    CGFloat currentOffsetX = scrollView.contentOffset.x;
-    CGFloat scrollViewW = scrollView.bounds.size.width;
-    
-    NSInteger originalIndex = (NSInteger)self.startOffsetX / scrollViewW;
-    NSInteger targetIndex = (NSInteger)currentOffsetX / scrollViewW;
-    
-    if (self.delegatePageContentView && [self.delegatePageContentView respondsToSelector:@selector(pageContentView:progress:originalIndex:targetIndex:)]) {
-        [self.delegatePageContentView pageContentView:self progress:1.0 originalIndex:originalIndex targetIndex:targetIndex];
-    }
-    
-}
+
 #pragma mark -
 #pragma mark   ==============UICollectionViewDelegate==============
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
