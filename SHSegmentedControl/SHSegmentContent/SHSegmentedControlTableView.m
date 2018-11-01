@@ -78,12 +78,18 @@ isPhoneX = [[UIApplication sharedApplication] delegate].window.safeAreaInsets.bo
     self.tableView.sectionHeaderHeight = barView.frame.size.height;
     self.tableView.rowHeight = self.frame.size.height - self.tableView.sectionHeaderHeight - self.tableView.sectionFooterHeight;
     [self.tableView reloadData];
+    if (self.pageContentView.delegatePageContentView) {
+        [self refreshPageContentView];
+    }
 }
 - (void)setFootView:(UIView *)footView {
     _footView = footView;
     self.tableView.sectionFooterHeight = footView.frame.size.height;
     self.tableView.rowHeight = self.frame.size.height - self.tableView.sectionHeaderHeight - self.tableView.sectionFooterHeight;
     [self.tableView reloadData];
+    if (self.pageContentView.delegatePageContentView) {
+        [self refreshPageContentView];
+    }
 }
 - (void)setTableViews:(NSArray *)tableViews {
     _tableViews = tableViews;
@@ -101,6 +107,20 @@ isPhoneX = [[UIApplication sharedApplication] delegate].window.safeAreaInsets.bo
     self.pageContentView.delegatePageContentView = self;
     
     [self.tableView reloadData];
+}
+- (void)refreshPageContentView {
+
+    CGFloat contentViewHeight = self.frame.size.height - self.tableView.sectionHeaderHeight - self.tableView.sectionFooterHeight;
+    
+    if (self.navStyle == SHSegmentedControlNavStyleNone) {
+        contentViewHeight -= (kDevice_Is_iPhoneX ? 88:64);
+    }
+    self.pageContentView.frame = CGRectMake(0, 0, self.frame.size.width, contentViewHeight);
+    self.pageContentView.collectionView.frame = self.pageContentView.bounds;
+    UICollectionViewFlowLayout *flowLayout =
+    (UICollectionViewFlowLayout *)self.pageContentView.collectionView.collectionViewLayout;
+    flowLayout.itemSize = self.pageContentView.collectionView.bounds.size;
+    [self.pageContentView.collectionView reloadData];
 }
 #pragma mark -
 #pragma mark   ==============数据刷新==============
@@ -266,7 +286,7 @@ isPhoneX = [[UIApplication sharedApplication] delegate].window.safeAreaInsets.bo
         _collectionView.showsHorizontalScrollIndicator = NO;
         _collectionView.pagingEnabled = YES;
         _collectionView.bounces = NO;
-        _collectionView.backgroundColor = [UIColor whiteColor];
+        _collectionView.backgroundColor = [UIColor clearColor];
         _collectionView.delegate = self;
         _collectionView.dataSource = self;
         [_collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"cell"];
@@ -285,6 +305,7 @@ isPhoneX = [[UIApplication sharedApplication] delegate].window.safeAreaInsets.bo
     cell.backgroundColor= [UIColor clearColor];
     [cell.contentView.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
     UIView *view = self.childViews[indexPath.item];
+    cell.contentView.frame = cell.bounds;
     view.frame = cell.contentView.frame;
     [cell.contentView addSubview:view];
     return cell;
