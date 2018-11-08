@@ -130,7 +130,7 @@
         CGPoint point = CGPointMake(selectedIndex * self.frame.size.width, 0);
         self.index = selectedIndex;
         self.scroll = NO;
-        [self.scrollView setContentOffset:point animated:YES];
+        [self.scrollView setContentOffset:point animated:NO];
     }
 }
 #pragma mark -
