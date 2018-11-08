@@ -9,9 +9,55 @@
 #import "SHSegmentedScrollView.h"
 
 
+@interface IDCMSHScrollView : UIScrollView <UIGestureRecognizerDelegate>
+
+@end
+
+@implementation IDCMSHScrollView
+#pragma mark -
+#pragma mark   ==============处理和系统侧滑手势冲突的问题==============
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(nonnull UIGestureRecognizer *)otherGestureRecognizer{
+    
+    if ([self panBack:gestureRecognizer]) {
+        return YES;
+    }
+    return NO;
+    
+}
+- (BOOL)panBack:(UIGestureRecognizer *)gestureRecognizer {
+    
+    int location_X = 100;//侧滑左侧的响应距离
+    
+    if (gestureRecognizer == self.panGestureRecognizer) {
+        UIPanGestureRecognizer *pan = (UIPanGestureRecognizer *)gestureRecognizer;
+        CGPoint point = [pan translationInView:self];
+        UIGestureRecognizerState state = gestureRecognizer.state;
+        if (UIGestureRecognizerStateBegan == state || UIGestureRecognizerStatePossible == state) {
+            CGPoint location = [gestureRecognizer locationInView:self];
+            if (point.x > 0 && location.x < location_X && self.contentOffset.x <= 0) {
+                return YES;
+            }
+        }
+    }
+    return NO;
+    
+}
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+    
+    if ([self panBack:gestureRecognizer]) {
+        return NO;
+    }
+    return YES;
+    
+}
+
+@end
+
+
+
 @interface SHSegmentedScrollView ()<UIScrollViewDelegate>
 
-@property (nonatomic, strong) UIScrollView *scrollView;
+@property (nonatomic, strong) IDCMSHScrollView *scrollView;
 
 @property (nonatomic, assign) NSInteger index;
 
@@ -24,23 +70,28 @@
 
 - (instancetype)initWithFrame:(CGRect)frame {
     if (self = [super initWithFrame:frame]) {
-        self.scrollView = ({
-            UIScrollView *scrollView = [[UIScrollView alloc] initWithFrame:self.bounds];
-            scrollView.delegate = self;
-            scrollView.pagingEnabled = YES;
-            scrollView.showsHorizontalScrollIndicator = YES;
-            scrollView.showsVerticalScrollIndicator = YES;
-            scrollView;
-        });
-        if (@available(iOS 11.0, *)) {
-            self.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-        }
+        
         [self addSubview:self.scrollView];
         self.index = 0;
         self.scroll = YES;
     }
     return self;
 }
+- (IDCMSHScrollView *)scrollView {
+    if (!_scrollView) {
+        _scrollView = [[IDCMSHScrollView alloc] initWithFrame:self.bounds];
+        _scrollView.delegate = self;
+        _scrollView.pagingEnabled = YES;
+        _scrollView.bounces = NO;
+        _scrollView.showsHorizontalScrollIndicator = YES;
+        _scrollView.showsVerticalScrollIndicator = YES;
+        if (@available(iOS 11.0, *)) {
+            _scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+        }
+    }
+    return _scrollView;
+}
+
 #pragma mark -
 #pragma mark   ==============set==============
 - (void)setTopView:(UIView *)topView {
