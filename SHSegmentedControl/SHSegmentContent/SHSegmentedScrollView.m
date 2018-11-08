@@ -145,17 +145,17 @@
 #pragma mark -
 #pragma mark   ==============UIScrollViewDelegate==============
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    if (!self.scroll) return;
     
-    if (self.delegateCell && [self.delegateCell respondsToSelector:@selector(scrollViewDidScrollIndex:)]) {
-        NSInteger index = (NSInteger)((scrollView.contentOffset.x + self.frame.size.width * 0.5) / self.frame.size.width);
-        if (index != self.index) {
-            self.index = index;
-            [self.delegateCell scrollViewDidScrollIndex:index];
+    if (self.scroll) {
+        if (self.delegateCell && [self.delegateCell respondsToSelector:@selector(scrollViewDidScrollIndex:)]) {
+            NSInteger index = (NSInteger)((scrollView.contentOffset.x + self.frame.size.width * 0.5) / self.frame.size.width);
+            if (index != self.index) {
+                self.index = index;
+                [self.delegateCell scrollViewDidScrollIndex:index];
+            }
         }
+        self.scroll = YES;
     }
 }
-- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
-    self.scroll = YES;
-}
+
 @end
