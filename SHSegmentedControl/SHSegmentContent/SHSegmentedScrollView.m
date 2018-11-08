@@ -154,8 +154,8 @@
                 [self.delegateCell scrollViewDidScrollIndex:index];
             }
         }
-        self.scroll = YES;
     }
+    self.scroll = YES;
 }
 
 @end
