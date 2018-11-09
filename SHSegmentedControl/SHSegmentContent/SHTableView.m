@@ -23,6 +23,8 @@
         self.estimatedSectionFooterHeight = 0;
         self.estimatedSectionHeaderHeight = 0;
         self.estimatedRowHeight = 0;
+        self.showsHorizontalScrollIndicator = NO;
+        self.showsVerticalScrollIndicator = NO;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(pageTitleViewToTop) name:@"pageTitleViewToTop" object:nil];
     }
     return self;
@@ -35,6 +37,8 @@
         self.estimatedSectionFooterHeight = 0;
         self.estimatedSectionHeaderHeight = 0;
         self.estimatedRowHeight = 0;
+        self.showsHorizontalScrollIndicator = NO;
+        self.showsVerticalScrollIndicator = NO;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(pageTitleViewToTop) name:@"pageTitleViewToTop" object:nil];
     }
     return self;
@@ -46,10 +50,19 @@
         }
         self.estimatedSectionFooterHeight = 0;
         self.estimatedSectionHeaderHeight = 0;
+        self.showsHorizontalScrollIndicator = NO;
+        self.showsVerticalScrollIndicator = NO;
         self.estimatedRowHeight = 0;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(pageTitleViewToTop) name:@"pageTitleViewToTop" object:nil];
     }
     return self;
+}
+- (void)didMoveToSuperview{
+    
+    [super didMoveToSuperview];
+    
+    self.showsHorizontalScrollIndicator = NO;
+    self.showsVerticalScrollIndicator = NO;
 }
 - (void)pageTitleViewToTop {
     self.contentOffset = CGPointZero;
@@ -76,6 +89,8 @@
         self.estimatedSectionFooterHeight = 0;
         self.estimatedSectionHeaderHeight = 0;
         self.estimatedRowHeight = 0;
+        self.showsHorizontalScrollIndicator = NO;
+        self.showsVerticalScrollIndicator = NO;
     }
     return self;
 }
@@ -87,6 +102,8 @@
         self.estimatedSectionFooterHeight = 0;
         self.estimatedSectionHeaderHeight = 0;
         self.estimatedRowHeight = 0;
+        self.showsHorizontalScrollIndicator = NO;
+        self.showsVerticalScrollIndicator = NO;
     }
     return self;
 }
@@ -98,10 +115,18 @@
         self.estimatedSectionFooterHeight = 0;
         self.estimatedSectionHeaderHeight = 0;
         self.estimatedRowHeight = 0;
+        self.showsHorizontalScrollIndicator = NO;
+        self.showsVerticalScrollIndicator = NO;
     }
     return self;
 }
-
+- (void)didMoveToSuperview{
+    
+    [super didMoveToSuperview];
+    
+    self.showsHorizontalScrollIndicator = NO;
+    self.showsVerticalScrollIndicator = NO;
+}
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
     return [gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]] && [otherGestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]];
     
