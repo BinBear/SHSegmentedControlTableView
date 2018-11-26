@@ -146,6 +146,24 @@ const NSInteger tag = 20171010;
     [self addSubview];
     [self reloadViews];
 }
+- (void)removeCustomTopView{
+    if (self.topView) {
+        CGRect rect = self.frame;
+        rect.size.height -= self.topView.frame.size.height;
+        self.frame = rect;
+        [self.topView removeFromSuperview];
+        self.topView = nil;
+    }
+}
+- (void)removeCustomBottomView{
+    if (self.bottomView) {
+        CGRect rect = self.frame;
+        rect.size.height -= self.bottomView.frame.size.height;
+        self.frame = rect;
+        [self.bottomView removeFromSuperview];
+        self.bottomView = nil;
+    }
+}
 - (void)restItmes:(NSArray *)items
           topView:(UIView *)topView
        bottomView:(UIView *)bottomView {
@@ -153,7 +171,9 @@ const NSInteger tag = 20171010;
     if (self.topView) {
         CGRect rect = self.frame;
         rect.size.height -= self.topView.frame.size.height;
+        self.frame = rect;
         [self.topView removeFromSuperview];
+        self.topView = nil;
     }
     if (topView) {
         self.topView = topView;
@@ -163,7 +183,9 @@ const NSInteger tag = 20171010;
     if (self.bottomView) {
         CGRect rect = self.frame;
         rect.size.height -= self.bottomView.frame.size.height;
+        self.frame = rect;
         [self.bottomView removeFromSuperview];
+        self.bottomView = nil;
     }
     if (bottomView) {
         self.bottomView = bottomView;
@@ -198,7 +220,7 @@ const NSInteger tag = 20171010;
         rect.size.height -= self.bottomView.frame.size.height;
         self.frame = rect;
         [self.bottomView removeFromSuperview];
-         self.bottomView = nil;
+        self.bottomView = nil;
     }
     if (bottomView) {
         self.bottomView = bottomView;

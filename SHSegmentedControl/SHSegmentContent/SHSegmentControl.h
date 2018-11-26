@@ -101,6 +101,9 @@ typedef enum : NSUInteger {
 /** 属性设置后，手动刷新，提高性能 */
 - (void)reloadViews;
 
+- (void)removeCustomTopView;
+- (void)removeCustomBottomView;
+
 @end
 
 
