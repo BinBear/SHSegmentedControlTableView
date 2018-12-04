@@ -77,7 +77,7 @@ isPhoneX = [[UIApplication sharedApplication] delegate].window.safeAreaInsets.bo
 - (void)setBarView:(UIView *)barView {
     _barView = barView;
     self.tableView.sectionHeaderHeight = barView.frame.size.height;
-    self.tableView.rowHeight = self.frame.size.height - self.tableView.sectionHeaderHeight - self.tableView.sectionFooterHeight - (kDevice_Is_iPhoneX ? 88:64);
+    self.tableView.rowHeight = self.frame.size.height - self.tableView.sectionHeaderHeight - self.tableView.sectionFooterHeight;
     [self.tableView reloadData];
     if (self.pageContentView.delegatePageContentView) {
         [self refreshPageContentView];
@@ -86,7 +86,7 @@ isPhoneX = [[UIApplication sharedApplication] delegate].window.safeAreaInsets.bo
 - (void)setFootView:(UIView *)footView {
     _footView = footView;
     self.tableView.sectionFooterHeight = footView.frame.size.height;
-    self.tableView.rowHeight = self.frame.size.height - self.tableView.sectionHeaderHeight - self.tableView.sectionFooterHeight - (kDevice_Is_iPhoneX ? 88:64);
+    self.tableView.rowHeight = self.frame.size.height - self.tableView.sectionHeaderHeight - self.tableView.sectionFooterHeight;
     [self.tableView reloadData];
     if (self.pageContentView.delegatePageContentView) {
         [self refreshPageContentView];
@@ -101,7 +101,7 @@ isPhoneX = [[UIApplication sharedApplication] delegate].window.safeAreaInsets.bo
     }
     CGFloat contentViewHeight = self.frame.size.height - self.tableView.sectionHeaderHeight - self.tableView.sectionFooterHeight;
     
-    if (self.navStyle == SHSegmentedControlNavStyleNone || self.navStyle == SHSegmentedControlNavStyleHide) {
+    if (self.navStyle == SHSegmentedControlNavStyleNone) {
         contentViewHeight -= (kDevice_Is_iPhoneX ? 88:64);
     }
     self.pageContentView = [[SHPageContentView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, contentViewHeight) parentView:self childViews:tableViews];
@@ -113,7 +113,7 @@ isPhoneX = [[UIApplication sharedApplication] delegate].window.safeAreaInsets.bo
 
     CGFloat contentViewHeight = self.frame.size.height - self.tableView.sectionHeaderHeight - self.tableView.sectionFooterHeight;
     
-    if (self.navStyle == SHSegmentedControlNavStyleNone || self.navStyle == SHSegmentedControlNavStyleHide) {
+    if (self.navStyle == SHSegmentedControlNavStyleNone) {
         contentViewHeight -= (kDevice_Is_iPhoneX ? 88:64);
     }
     self.pageContentView.frame = CGRectMake(0, 0, self.frame.size.width, contentViewHeight);
